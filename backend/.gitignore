@@ -1,0 +1,17 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# System files
+.DS_Store
+
+# Temporary files
+tmp/
+temp/
+
+
+# Lock files (optional, depending on team practices)
+package-lock.json
+yarn.lock
