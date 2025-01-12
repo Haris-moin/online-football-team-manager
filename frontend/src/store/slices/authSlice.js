@@ -33,13 +33,7 @@ export const signOut = createAsyncThunk('auth/logout', async (data) => {
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {
-    authenticated: (state, action) => ({
-      ...state, loading: false, redirect: '/', token: action.payload
-    }),
-    showAuthMessage: (state, action) => ({
-      ...state, message: action.payload, showMessage: true, loading: false
-    }),
+  reducers: { 
     hideAuthMessage: (state) => ({
       ...state, message: '', showMessage: false, status: ''
     }),
@@ -47,10 +41,6 @@ export const authSlice = createSlice({
       ...state, loading: false, token: null, showMessage: !!payload, message: payload, user: null
     }),
     showLoading: (state) => ({ ...state, loading: true }),
-    signInSuccess: (state, action) => ({ ...state, loading: false, token: action.payload }),
-    updateRedirectURL: (state, action) => ({
-      ...state, redirect: action.payload
-    })
   },
   extraReducers: (builder) => {
     builder
@@ -95,13 +85,9 @@ export const authSlice = createSlice({
 });
 
 export const {
-  authenticated,
-  showAuthMessage,
   hideAuthMessage,
   signOutSuccess,
   showLoading,
-  signInSuccess,
-  updateRedirectURL
 } = authSlice.actions;
 
 export default authSlice.reducer;

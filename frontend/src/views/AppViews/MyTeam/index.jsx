@@ -1,55 +1,82 @@
-import { Table } from 'antd';
-
-const dummyData = [
-  {
-    key: '1',
-    name: 'John Doe',
-    age: 32,
-    address: '10 Downing Street',
-  },
-  {
-    key: '2',
-    name: 'Jane Smith',
-    age: 28,
-    address: '11 Downing Street',
-  },
-  {
-    key: '3',
-    name: 'Mike Johnson',
-    age: 45,
-    address: '12 Downing Street',
-  },
-  {
-    key: '4',
-    name: 'Emily Davis',
-    age: 29,
-    address: '13 Downing Street',
-  },
-];
-
-const columns = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
-  },
-  {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
-  },
-  {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
-  },
-];
+import { Space, Tag, Typography } from "antd";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getUserTeam } from "../../../store/slices/teamSlice";
+import Loading from "../../../components/Loading";
+import PlayerTable from "../../../components/Table";
 
 const MyTeam = () => {
+  const { Title, Text } = Typography;
+  const dispatch = useDispatch();
+  const { team, loading } = useSelector((state) => state.userTeam);
+
+  const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Position",
+      key: "position",
+      dataIndex: "position",
+      render: (_, record) => (
+        <Tag className="text-uppercase" color="blue">{record.position}</Tag>
+      ),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <Space size="middle">
+          <a>{record.name}</a>
+          <a>Transfer</a>
+        </Space>
+      ),
+    },
+  ];
+
+  const teamInfo = {
+    teamName: team?.teamName,
+    budget: team?.budget,
+  };
+
+  const data =
+    team?.players?.map((player) => ({
+      key: player._id,
+      name: player.name,
+      position: player.position,
+    })) || [];
+
+  const getTeamDetails = async () => {
+    dispatch(getUserTeam());
+  };
+
+  useEffect(() => {
+    getTeamDetails();
+  }, []);
+
   return (
-    <div style={{ padding: '20px' }}>
-      <Table dataSource={dummyData} columns={columns} />
-    </div>
+    <>
+      {loading ? (
+        <div className="loader-overlay">
+          <Loading />
+        </div>
+      ) : (
+        <div style={{ padding: "20px" }}>
+          <Space direction="vertical" size="middle" className="d-flex mb-2">
+            <Title level={3}>Team Details</Title>
+            <Text>
+              <strong>Team Name:</strong> {teamInfo?.teamName}
+            </Text>
+            <Text>
+              <strong>Budget:</strong> ${teamInfo?.budget?.toLocaleString()}
+            </Text>
+          </Space>
+          <PlayerTable data={data} columns={columns} />
+        </div>
+      )}
+    </>
   );
 };
 

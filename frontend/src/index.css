@@ -1,198 +1,137 @@
-
 * {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-  }
-  
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
 
-  .h-100 {
-    height: 100vh;
-  }
-  
-  .w-100 {
-    width: 100%;
-  }
-  
-  .container {
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 0 15px;
-  }
+.h-100 {
+  height: 100vh;
+}
 
-  .d-flex {
-    display: flex;
-  }
-  
-  .flex-column {
-    flex-direction: column;
-  }
-  
-  .flex-row {
-    flex-direction: row;
-  }
-  
-  .justify-content-center {
-    justify-content: center;
-  }
-  
-  .justify-content-between {
-    justify-content: space-between;
-  }
-  
-  .align-items-center {
-    align-items: center;
-  }
-  
-  .align-items-start {
-    align-items: flex-start;
-  }
-  
-  .align-items-end {
-    align-items: flex-end;
-  }
+.w-100 {
+  width: 100%;
+}
 
-  .width-400{
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.align-items-start {
+  align-items: flex-start;
+}
+
+.align-items-end {
+  align-items: flex-end;
+}
+
+.width-400 {
   width: 400px
-  }
+}
 
-  .m-auto{
-    margin: auto;
-  }
+.m-auto {
+  margin: auto;
+}
 
-  .mt-1 {
-    margin-top: 4px;
-  }
-  
-  .mt-2 {
-    margin-top: 8px;
-  }
-  
-  .mt-3 {
-    margin-top: 16px;
-  }
-  
-  .mb-1 {
-    margin-bottom: 4px;
-  }
-  
-  .mb-2 {
-    margin-bottom: 8px;
-  }
-  
-  .mb-3 {
-    margin-bottom: 16px;
-  }
-  
-  .ml-1 {
-    margin-left: 4px;
-  }
-  
-  .ml-2 {
-    margin-left: 8px;
-  }
-  
-  .ml-3 {
-    margin-left: 16px;
-  }
-  
-  .mr-1 {
-    margin-right: 4px;
-  }
-  
-  .mr-2 {
-    margin-right: 8px;
-  }
-  
-  .mr-3 {
-    margin-right: 16px;
-  }
-  
-  .p-1 {
-    padding: 4px;
-  }
-  
-  .p-2 {
-    padding: 8px;
-  }
-  
-  .p-3 {
-    padding: 16px;
-  }
-  
-  .text-center {
-    text-align: center;
-  }
-  
-  .text-left {
-    text-align: left;
-  }
-  
-  .text-right {
-    text-align: right;
-  }
-  
-  .text-uppercase {
-    text-transform: uppercase;
-  }
-  
-  .text-lowercase {
-    text-transform: lowercase;
-  }
-  
-  .text-capitalize {
-    text-transform: capitalize;
-  }
-  
-  .d-none {
-    display: none;
-  }
-  
-  .d-block {
-    display: block;
-  }
-  
-  .d-inline {
-    display: inline;
-  }
-  
-  .d-inline-block {
-    display: inline-block;
-  }
-  
-  .position-relative {
-    position: relative;
-  }
-  
-  .position-absolute {
-    position: absolute;
-  }
-  
-  .position-fixed {
-    position: fixed;
-  }
-  
-  .position-sticky {
-    position: sticky;
-  }
-  
-  .overflow-hidden {
-    overflow: hidden;
-  }
-  
-  .overflow-scroll {
-    overflow: scroll;
-  }
-  
-  .overflow-auto {
-    overflow: auto;
-  }
-  
-  .rounded {
-    border-radius: 4px;
-  }
-  
-  .rounded-circle {
-    border-radius: 50%;
-  }
-  
+.mt-1 {
+  margin-top: 8px;
+}
+
+.mt-2 {
+  margin-top: 16px;
+}
+
+.mb-1 {
+  margin-bottom: 8px;
+}
+
+.mb-2 {
+  margin-bottom: 16px;
+}
+
+.ml-1 {
+  margin-left: 8px;
+}
+
+.ml-2 {
+  margin-left: 16px;
+}
+
+.mr-1 {
+  margin-right: 8px;
+}
+
+.mr-2 {
+  margin-right: 16px;
+}
+
+.p-1 {
+  padding: 8px;
+}
+
+.p-2 {
+  padding: 16px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+.text-capitalize {
+  text-transform: capitalize;
+}
+
+.d-none {
+  display: none;
+}
+
+.d-block {
+  display: block;
+}
+
+.overflow-auto {
+  overflow: auto;
+}
+
+.rounded {
+  border-radius: 4px;
+}
+
+.rounded-circle {
+  border-radius: 50%;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+}

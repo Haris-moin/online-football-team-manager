@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Form, Input, Button, Typography, Alert } from "antd";
 import { useEffect } from "react";
 
@@ -6,20 +5,19 @@ import {
   authenticateUser,
   hideAuthMessage,
 } from "../../../store/slices/authSlice";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
 
 const { Title } = Typography;
 
-const LoginScreen = () => {
+const AuthScreen = () => {
   const { loading, message, showMessage, token, redirect } = useSelector(
     (state) => state.auth
   );
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
   const onFinish = (values) => {
     dispatch(authenticateUser({ ...values }));
   };
@@ -43,7 +41,7 @@ const LoginScreen = () => {
       </Title>
 
       {message && <Alert message={message} showIcon type="error" />}
-      <div className="mt-3">
+      <div className="mt-2">
         <Form name="auth" onFinish={onFinish} layout="vertical">
           <Form.Item
             name="email"
@@ -81,7 +79,7 @@ const LoginScreen = () => {
 
           <Form.Item>
             <Button
-              className="mt-3"
+              className="mt-2"
               type="primary"
               htmlType="submit"
               loading={loading}
@@ -96,4 +94,4 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+export default AuthScreen;
