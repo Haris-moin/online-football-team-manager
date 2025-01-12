@@ -1,14 +1,46 @@
-import { Space, Tag, Typography } from "antd";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getUserTeam } from "../../../store/slices/teamSlice";
+import { Typography, Space, Button, Tag } from "antd";
 import Loading from "../../../components/Loading";
-import PlayerTable from "../../../components/Table";
+import PlayerTable from "../../../components/PlayerTable";
+import TransferModal from "../../../components/TransferModal";
+import { getUserTeam } from "../../../store/slices/teamSlice";
 
 const MyTeam = () => {
   const { Title, Text } = Typography;
   const dispatch = useDispatch();
   const { team, loading } = useSelector((state) => state.userTeam);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedPlayerKey, setSelectedPlayerKey] = useState('');
+
+  const handleTransfer = (key) => {
+    setSelectedPlayerKey(key);
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const getTeamDetails = async () => {
+    dispatch(getUserTeam());
+  };
+
+  useEffect(() => {
+    getTeamDetails();
+  }, []);
+
+  const renderTag = (text, color = "blue") => (
+    <Tag className="text-uppercase" color={color}>
+      {text}
+    </Tag>
+  );
+
+  const renderActions = (record) => (
+    <Space size="middle">
+      <Button onClick={() => handleTransfer(record.key)}>Transfer</Button>
+    </Space>
+  );
 
   const columns = [
     {
@@ -20,63 +52,50 @@ const MyTeam = () => {
       title: "Position",
       key: "position",
       dataIndex: "position",
-      render: (_, record) => (
-        <Tag className="text-uppercase" color="blue">{record.position}</Tag>
-      ),
+      render: (position) => renderTag(position),
     },
     {
       title: "Action",
       key: "action",
-      render: (_, record) => (
-        <Space size="middle">
-          <a>{record.name}</a>
-          <a>Transfer</a>
-        </Space>
-      ),
+      render: (_, record) => renderActions(record),
     },
   ];
-
-  const teamInfo = {
-    teamName: team?.teamName,
-    budget: team?.budget,
-  };
 
   const data =
     team?.players?.map((player) => ({
       key: player._id,
       name: player.name,
       position: player.position,
+      isTransferListed: player.transferListed,
     })) || [];
 
-  const getTeamDetails = async () => {
-    dispatch(getUserTeam());
-  };
-
-  useEffect(() => {
-    getTeamDetails();
-  }, []);
-
   return (
-    <>
+    <div className="p-2">
       {loading ? (
         <div className="loader-overlay">
           <Loading />
         </div>
       ) : (
-        <div style={{ padding: "20px" }}>
+        <>
           <Space direction="vertical" size="middle" className="d-flex mb-2">
-            <Title level={3}>Team Details</Title>
+            <Title level={3}>Team Information</Title>
             <Text>
-              <strong>Team Name:</strong> {teamInfo?.teamName}
+              <strong>Team Name:</strong> {team?.teamName || "N/A"}
             </Text>
             <Text>
-              <strong>Budget:</strong> ${teamInfo?.budget?.toLocaleString()}
+              <strong>Budget:</strong> ${team?.budget?.toLocaleString() || "0"}
             </Text>
           </Space>
+          <TransferModal
+            isVisible={isModalVisible}
+            onCancel={handleCancel}
+            selectedPlayerKey={selectedPlayerKey}
+            getTeamDetails={getTeamDetails}
+          />
           <PlayerTable data={data} columns={columns} />
-        </div>
+        </>
       )}
-    </>
+    </div>
   );
 };
 

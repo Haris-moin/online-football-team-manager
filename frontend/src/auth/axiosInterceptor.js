@@ -1,22 +1,23 @@
-import { notification } from 'antd';
-import axios from 'axios';
-import { signOutSuccess } from '../store/slices/authSlice';
-import { removeItemFromLocalStorage } from '../utils/utils';
-import { AUTH_TOKEN } from '../constants/constants';
-import store from '../store';
-
+import { notification } from "antd";
+import axios from "axios";
+import { signOutSuccess } from "../store/slices/authSlice";
+import { removeItemFromLocalStorage } from "../utils/utils";
+import {
+  AUTH_TOKEN,
+  DEFAULT_ERROR_MESSAGE,
+  ERROR_MESSAGE_MAP,
+  TOKEN_PAYLOAD_KEY,
+} from "../constants/constants";
+import store from "../store";
 
 const service = axios.create({
   timeout: 300000,
   headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json'
-  }
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  },
 });
 
-const TOKEN_PAYLOAD_KEY = 'authorization';
-
-// API Request interceptor
 service.interceptors.request.use(
   (config) => {
     const cloneConfig = { ...config };
@@ -30,41 +31,35 @@ service.interceptors.request.use(
   },
   (error) => {
     notification.error({
-      message: 'Error'
+      message: "Error",
     });
-    Promise.reject(error);
+    return Promise.reject(error);
   }
 );
 
-// API respone interceptor
 service.interceptors.response.use(
-  (response) => (response?.data),
+  (response) => response?.data,
   (error) => {
-    const notificationParam = {
-      message: ''
-    };
+    const { response } = error;
 
-    if (!error?.response || error?.response?.status === 401) {
-      const keysToRemove = [AUTH_TOKEN];
-      keysToRemove.forEach((key) => removeItemFromLocalStorage(key));
-      notificationParam.message = error?.response?.data?.message || 'Your Session has expired';
-      store.dispatch(signOutSuccess());
-    }
+    if (response) {
+      const { status, data } = response;
+      const message =
+        data?.message || ERROR_MESSAGE_MAP[status] || DEFAULT_ERROR_MESSAGE;
 
-    if (error?.response?.status === 404) {
-      notificationParam.message = error?.response?.data?.message || 'Not Found"';
-    }
+      if (status === 401) {
+        removeItemFromLocalStorage(AUTH_TOKEN);
+        store.dispatch(signOutSuccess());
+      }
 
-    if (error?.response?.status === 500) {
-      notificationParam.message = error?.response?.data?.message || 'Internal Server Error';
-    }
-
-    if (notificationParam.message) {
-      notification.error(notificationParam);
+      notification.error({ message });
+    } else {
+      notification.error({
+        message: "Network error. Please check your connection.",
+      });
     }
 
     return Promise.reject(error);
   }
 );
-
 export default service;

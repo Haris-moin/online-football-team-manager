@@ -109,6 +109,18 @@ exports.getTransferredPlayers = async (req, res) => {
     });
 
     const filteredPlayers = await Player.aggregate(filterPipeline);
+    const team = await Team.findOne({ userId: req.user.id })
+    if(filteredPlayers.length > 0 ){
+      const updatedPlayers = filteredPlayers?.map(player => {
+        return {
+          ...player,  
+          isTeamMember: player.teamId.equals(team._id )
+        };
+      });
+
+      return res.status(200).json({ players: updatedPlayers });
+    }
+
     res.status(200).json({ players: filteredPlayers });
   } catch (error) {
     res.status(500).json({
@@ -122,7 +134,6 @@ exports.purchasePlayer = async (req, res) => {
 
   const purchasePlayerSchema = Joi.object({
     playerId: Joi.string().required(),
-    buyerTeamId: Joi.string().required(),
   });
 
   try {
@@ -131,7 +142,7 @@ exports.purchasePlayer = async (req, res) => {
       return res.status(400).json({ errors: error.toString() });
     }
 
-    const { playerId, buyerTeamId } = value;
+    const { playerId } = value;
 
     const player = await Player.findById(playerId);
     if (!player || !player.transferListed) {
@@ -140,8 +151,9 @@ exports.purchasePlayer = async (req, res) => {
         .json({ message: "Player is not available for transfer." });
     }
 
+    const buyerTeam = await Team.findOne({ userId: req.user.id })
     const sellerTeam = await Team.findById(player.teamId);
-    const buyerTeam = await Team.findById(buyerTeamId);
+  
 
     if (!buyerTeam) {
       return res.status(404).json({ message: "Buyer team not found." });

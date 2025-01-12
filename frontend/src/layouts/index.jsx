@@ -8,8 +8,6 @@ const AuthLayout = lazy(() => import("../layouts//AuthLayout"));
 
 function Layouts() {
   const token = useSelector((state) => state.auth.token);
-
-
   const Layout = token ? AppLayout : AuthLayout;
 
   return (

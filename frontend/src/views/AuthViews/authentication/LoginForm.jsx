@@ -1,4 +1,4 @@
-import { Form, Input, Button, Typography, Alert } from "antd";
+import { Form, Input, Button, Typography } from "antd";
 import { useEffect } from "react";
 
 import {
@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 const { Title } = Typography;
 
 const AuthScreen = () => {
-  const { loading, message, showMessage, token, redirect } = useSelector(
+  const { loading, showMessage, token, redirect } = useSelector(
     (state) => state.auth
   );
 
@@ -39,8 +39,6 @@ const AuthScreen = () => {
       <Title className="text-center" level={3}>
         Get Started
       </Title>
-
-      {message && <Alert message={message} showIcon type="error" />}
       <div className="mt-2">
         <Form name="auth" onFinish={onFinish} layout="vertical">
           <Form.Item
