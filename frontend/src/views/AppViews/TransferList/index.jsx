@@ -1,27 +1,36 @@
-import { Button, Space, Table, Tag, Typography, } from "antd";
+import { Button, Space, Tag, Typography } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { getTransferListedPlayers, toggleTransfer, purchasePlayer } from "../../../store/slices/transferSlice";
-import { useEffect } from "react";
+import {
+  getTransferListedPlayers,
+  toggleTransfer,
+  purchasePlayer,
+} from "../../../store/slices/transferSlice";
+import { useCallback, useEffect } from "react";
 import Loading from "../../../components/Loading";
+import PlayerTable from "../../../components/PlayerTable";
 
 const TransferList = () => {
-  const {Title} =  Typography;
+  const { Title } = Typography;
   const dispatch = useDispatch();
-  const {loading, players} = useSelector((state) => state.transfer);
+  const { loading, players } = useSelector((state) => state.transfer);
 
-  const handleBuyPlayer = (playerId) =>{
-    dispatch(purchasePlayer({playerId}));
-  }
-
-  const getTransferPlayers = async () => {
-    dispatch(getTransferListedPlayers());
+  const handleBuyPlayer = (playerId) => {
+    dispatch(purchasePlayer({ playerId }));
   };
 
-  const handleRemoveTransfer = async (playerId) =>{
-      dispatch(toggleTransfer({ playerId }));
-     await getTransferPlayers()
-    };
-    
+  const getTransferPlayers = useCallback(() => {
+    dispatch(getTransferListedPlayers());
+  }, [dispatch]);
+
+  useEffect(() => {
+    getTransferPlayers();
+  }, [getTransferPlayers, players.length]);
+
+  const handleRemoveTransfer = async (playerId) => {
+    dispatch(toggleTransfer({ playerId }));
+    await getTransferPlayers();
+  };
+
   const renderTag = (text, color = "blue") => (
     <Tag className="text-uppercase" color={color}>
       {text}
@@ -40,16 +49,23 @@ const TransferList = () => {
     </Space>
   );
 
-  const data = players?.map(player => ({
-    key: player._id,
-    name: player.name,
-    teamName: player.team.teamName,
-    position: player.position,
-    askingPrice: player.askingPrice,
-    isTeamMember: player.isTeamMember
-  })) || [];
+  const data =
+    players?.map((player) => ({
+      key: player._id,
+      name: player.name,
+      teamName: player.team.teamName,
+      position: player.position,
+      askingPrice: player.askingPrice,
+      isTeamMember: player.isTeamMember,
+    })) || [];
 
   const columns = [
+    {
+      title: "SR No",
+      dataIndex: "srNo",
+      key: "srNo",
+      render: (text, record, index) => index + 1,
+    },
     {
       title: "Name",
       dataIndex: "name",
@@ -59,11 +75,6 @@ const TransferList = () => {
       title: "Team Name",
       dataIndex: "teamName",
       key: "teamName",
-    },
-    {
-      title: "Position",
-      dataIndex: "position",
-      key: "position",
     },
     {
       title: "Position",
@@ -83,10 +94,6 @@ const TransferList = () => {
     },
   ];
 
-  useEffect(() => {
-    getTransferPlayers();
-  }, []);
-
   return (
     <>
       {loading ? (
@@ -94,9 +101,9 @@ const TransferList = () => {
       ) : (
         <div className="p-2">
           <div className="mb-2">
-          <Title level={3}>Transfer Market</Title>
+            <Title level={3}>Transfer Market</Title>
           </div>
-          <Table dataSource={data} columns={columns} />
+          <PlayerTable data={data} columns={columns} />
         </div>
       )}
     </>

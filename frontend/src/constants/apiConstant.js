@@ -1,4 +1,3 @@
-
 const BASE_URl = 'http://localhost:8080/api';
 
 export const AUTH_SERVICE = `${BASE_URl}/users/auth`

@@ -1,38 +1,19 @@
 import { Form, Input, Button, Typography } from "antd";
-import { useEffect } from "react";
-
-import {
-  authenticateUser,
-  hideAuthMessage,
-} from "../../../store/slices/authSlice";
-import { useNavigate } from "react-router-dom";
-
+import { authenticateUser } from "../../../store/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const { Title } = Typography;
 
 const AuthScreen = () => {
-  const { loading, showMessage, token, redirect } = useSelector(
+  const { loading } = useSelector(
     (state) => state.auth
   );
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const onFinish = (values) => {
     dispatch(authenticateUser({ ...values }));
   };
 
-  useEffect(() => {
-    if (token !== null) {
-      navigate(redirect);
-    }
-    if (showMessage) {
-      const timer = setTimeout(() => dispatch(hideAuthMessage()), 3000);
-      return () => {
-        clearTimeout(timer);
-      };
-    }
-  }, [showMessage]);
 
   return (
     <div>

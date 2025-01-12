@@ -4,7 +4,6 @@ import TransferService from "../../services/transferService";
 export const initialState = {
   loading: false,
   message: "",
-  showMessage: false,
   redirect:'',
   players:[]
 };
@@ -49,9 +48,6 @@ export const purchasePlayer = createAsyncThunk(
 export const teansferPlayerSlice = createSlice({
   name: "transfer",
   initialState,
-  reducers: {
-    showLoading: (state) => ({ ...state, loading: true }),
-  },
   extraReducers: (builder) => {
     builder
       .addCase(toggleTransfer.pending, (state) => {
@@ -70,7 +66,6 @@ export const teansferPlayerSlice = createSlice({
         return {
           ...state,
           message: action.payload,
-          showMessage: true,
           loading: false,
         };
       })
@@ -90,7 +85,6 @@ export const teansferPlayerSlice = createSlice({
         return {
           ...state,
           message: action.payload,
-          showMessage: true,
           loading: false,
         };
       })
@@ -109,13 +103,10 @@ export const teansferPlayerSlice = createSlice({
         return {
           ...state,
           message: action.payload,
-          showMessage: true,
           loading: false,
         };
       });
   },
 });
-
-export const { showLoading } = teansferPlayerSlice.actions;
 
 export default teansferPlayerSlice.reducer;

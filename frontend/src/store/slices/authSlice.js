@@ -7,7 +7,6 @@ import UserService from '../../services/authServices';
 export const initialState = {
   loading: false,
   message: '',
-  showMessage: false,
   redirect: '',
   status: '',
   token: getValueFromLocalStorage(AUTH_TOKEN),
@@ -34,13 +33,9 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: { 
-    hideAuthMessage: (state) => ({
-      ...state, message: '', showMessage: false, status: ''
-    }),
     signOutSuccess: (state, { payload }) => ({
-      ...state, loading: false, token: null, showMessage: !!payload, message: payload, user: null
+      ...state, loading: false, token: null, message: payload, user: null
     }),
-    showLoading: (state) => ({ ...state, loading: true }),
   },
   extraReducers: (builder) => {
     builder
@@ -65,7 +60,6 @@ export const authSlice = createSlice({
         return {
           ...state,
           message: action.payload,
-          showMessage: true,
           loading: false,
         };
       })
@@ -85,9 +79,7 @@ export const authSlice = createSlice({
 });
 
 export const {
-  hideAuthMessage,
   signOutSuccess,
-  showLoading,
 } = authSlice.actions;
 
 export default authSlice.reducer;

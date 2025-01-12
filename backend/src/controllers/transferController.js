@@ -3,22 +3,23 @@ const Player = require("../models/Player");
 const Team = require("../models/Team");
 
 exports.toggleTransferListing = async (req, res) => {
-
   const playerTransferSchema = Joi.object({
     playerId: Joi.string().required(),
-    askingPrice: Joi.number().greater(5000).optional()
+    askingPrice: Joi.number().optional(),
   });
 
   try {
     const { error, value } = playerTransferSchema.validate(req.body);
     if (error) {
-      return res.status(400).json({ errors: error.toString() });
+      return res
+        .status(400)
+        .json({ message: error?.details[0]?.message || error.toString() });
     }
 
     const { playerId, askingPrice } = value;
     const player = await Player.findById(playerId).populate({
-      path: 'teamId',
-      select: 'userId teamName'
+      path: "teamId",
+      select: "userId teamName",
     });
 
     if (!player) {
@@ -27,11 +28,15 @@ exports.toggleTransferListing = async (req, res) => {
 
     const userId = req.user.id;
     if (player.teamId.userId.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "You are not authorized to transfer this player." });
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to transfer this player." });
     }
 
     if (!player.transferListed && !askingPrice) {
-      return res.status(403).json({ message: "Asking price must be greater than 5000." });
+      return res
+        .status(400)
+        .json({ message: "Asking price must be provided." });
     }
 
     player.transferListed = !player.transferListed;
@@ -109,19 +114,29 @@ exports.getTransferredPlayers = async (req, res) => {
     });
 
     const filteredPlayers = await Player.aggregate(filterPipeline);
-    const team = await Team.findOne({ userId: req.user.id })
-    if(filteredPlayers.length > 0 ){
-      const updatedPlayers = filteredPlayers?.map(player => {
+    const team = await Team.findOne({ userId: req.user.id });
+    if (filteredPlayers.length > 0) {
+      const updatedPlayers = filteredPlayers?.map((player) => {
         return {
-          ...player,  
-          isTeamMember: player.teamId.equals(team._id )
+          ...player,
+          isTeamMember: player.teamId.equals(team._id),
         };
       });
 
-      return res.status(200).json({ players: updatedPlayers });
+      return res
+        .status(200)
+        .json({
+          message: "Players fetched successfully.",
+          players: updatedPlayers,
+        });
     }
 
-    res.status(200).json({ players: filteredPlayers });
+    res
+      .status(200)
+      .json({
+        message: "Players fetched successfully.",
+        players: filteredPlayers,
+      });
   } catch (error) {
     res.status(500).json({
       message: "Error filtering transfer market.",
@@ -131,7 +146,6 @@ exports.getTransferredPlayers = async (req, res) => {
 };
 
 exports.purchasePlayer = async (req, res) => {
-
   const purchasePlayerSchema = Joi.object({
     playerId: Joi.string().required(),
   });
@@ -139,7 +153,9 @@ exports.purchasePlayer = async (req, res) => {
   try {
     const { error, value } = purchasePlayerSchema.validate(req.body);
     if (error) {
-      return res.status(400).json({ errors: error.toString() });
+      return res
+        .status(400)
+        .json({ message: error?.details[0]?.message || error.toString() });
     }
 
     const { playerId } = value;
@@ -151,9 +167,8 @@ exports.purchasePlayer = async (req, res) => {
         .json({ message: "Player is not available for transfer." });
     }
 
-    const buyerTeam = await Team.findOne({ userId: req.user.id })
+    const buyerTeam = await Team.findOne({ userId: req.user.id });
     const sellerTeam = await Team.findById(player.teamId);
-  
 
     if (!buyerTeam) {
       return res.status(404).json({ message: "Buyer team not found." });
@@ -167,22 +182,18 @@ exports.purchasePlayer = async (req, res) => {
         .json({ message: "Insufficient budget to purchase player." });
     }
 
-    // Update budgets for buyer and seller
     buyerTeam.budget -= transferPrice;
     sellerTeam.budget += transferPrice;
 
-    // Update the player's ownership
     player.teamId = buyerTeam._id;
     player.transferListed = false;
     player.askingPrice = undefined;
 
-    // Update the player lists in both teams
     sellerTeam.players = sellerTeam.players.filter(
       (pId) => pId.toString() !== playerId
     );
     buyerTeam.players.push(playerId);
 
-    // Save all changes
     await Promise.all([player.save(), buyerTeam.save(), sellerTeam.save()]);
 
     res.status(200).json({
@@ -190,11 +201,9 @@ exports.purchasePlayer = async (req, res) => {
       player,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message: "Error completing player purchase.",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Error completing player purchase.",
+      error: error.message,
+    });
   }
 };

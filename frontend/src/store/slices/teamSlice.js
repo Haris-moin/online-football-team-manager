@@ -4,7 +4,6 @@ import TeamService from '../../services/teamService';
 export const initialState = {
   loading: false,
   message: '',
-  showMessage: false,
   team:{}
 };
 
@@ -21,9 +20,6 @@ export const getUserTeam = createAsyncThunk('user/team', async (data, { rejectWi
 export const userTeamSlice = createSlice({
   name: 'userTeam',
   initialState,
-  reducers: { 
-    showLoading: (state) => ({ ...state, loading: true }),
-  },
   extraReducers: (builder) => {
     builder
       .addCase(getUserTeam.pending, (state) => {
@@ -41,15 +37,10 @@ export const userTeamSlice = createSlice({
         return {
           ...state,
           message: action.payload,
-          showMessage: true,
           loading: false,
         };
       })
   }
 });
-
-export const {
-  showLoading,
-} = userTeamSlice.actions;
 
 export default userTeamSlice.reducer;

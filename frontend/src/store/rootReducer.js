@@ -1,14 +1,13 @@
 import { combineReducers } from 'redux';
-import auth from './slices/authSlice';
-import userTeam from './slices/teamSlice';
-import transfer from './slices/transferSlice';
+import authReducer from './slices/authSlice';
+import transferReducer from './slices/transferSlice';
+import userTeamReducer from './slices/teamSlice';
 
-const rootReducer = (asyncReducers = {}) => (state, action) => {
+const rootReducer = () => (state, action) => {
   const combinedReducer = combineReducers({
-    auth,
-    transfer,
-    userTeam,
-    ...asyncReducers
+    auth: authReducer,
+    transfer: transferReducer,
+    userTeam: userTeamReducer,
   });
   return combinedReducer(state, action);
 };

@@ -8,6 +8,11 @@ const TransferModal = ({ isVisible, onCancel, selectedPlayerKey, getTeamDetails 
   const [form] = Form.useForm();
   const dispatch = useDispatch();
 
+  const onCancelModal = () =>{
+    form.resetFields();
+    onCancel();
+  }
+
   const handleApply = async () => {
     try {
       const values = await form.validateFields();
@@ -15,9 +20,10 @@ const TransferModal = ({ isVisible, onCancel, selectedPlayerKey, getTeamDetails 
         askingPrice: values?.price,
         playerId: selectedPlayerKey,
       };
-      dispatch(toggleTransfer(payload));
+     dispatch(toggleTransfer(payload));
+     form.resetFields();
       onCancel();
-      getTeamDetails();
+     await getTeamDetails();
     } catch (error) {
       console.error("Validation Failed:", error);
     }
@@ -27,7 +33,7 @@ const TransferModal = ({ isVisible, onCancel, selectedPlayerKey, getTeamDetails 
     <Modal
       title="Transfer Player"
       open={isVisible}
-      onCancel={onCancel}
+      onCancel={onCancelModal}
       footer={null}
     >
       <Form form={form} layout="vertical">

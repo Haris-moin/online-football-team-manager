@@ -6,7 +6,10 @@ exports.getTeam = async (req, res) => {
       path: 'players',
       match: { transferListed: false }
     });
-    res.json({ team });
+    res.status(200).json({
+      message: "Team fetched successfully.",
+      team,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

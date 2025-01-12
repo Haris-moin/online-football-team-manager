@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Typography, Space, Button, Tag } from "antd";
 import Loading from "../../../components/Loading";
@@ -22,13 +22,14 @@ const MyTeam = () => {
     setIsModalVisible(false);
   };
 
-  const getTeamDetails = async () => {
+
+  const getTeamDetails = useCallback(() => {
     dispatch(getUserTeam());
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     getTeamDetails();
-  }, []);
+  }, [getTeamDetails, team?.players?.length]);
 
   const renderTag = (text, color = "blue") => (
     <Tag className="text-uppercase" color={color}>
@@ -43,6 +44,12 @@ const MyTeam = () => {
   );
 
   const columns = [
+    {
+      title: 'SR No',
+      dataIndex: 'srNo',
+      key: 'srNo',
+      render: (text, record, index) => index + 1,
+    },
     {
       title: "Name",
       dataIndex: "name",

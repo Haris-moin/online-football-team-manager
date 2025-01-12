@@ -13,7 +13,9 @@ exports.userAuthHandler = async (req, res) => {
   try {
     const { error, value } = userSchema.validate(req.body);
     if (error) {
-      return res.status(400).json({ errors: error.toString() });
+      return res
+        .status(400)
+        .json({ message: error?.details[0]?.message || error.toString() });
     }
 
     const { email, password } = value;

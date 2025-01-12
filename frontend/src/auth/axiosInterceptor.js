@@ -38,7 +38,17 @@ service.interceptors.request.use(
 );
 
 service.interceptors.response.use(
-  (response) => response?.data,
+  (response) => {
+    const { data } = response;
+
+    notification.success({
+      message: "Request successful",
+      description: data?.message || "Your request was processed successfully.",
+      key: 'success-notification',
+    });
+
+    return data;
+  },
   (error) => {
     const { response } = error;
 
