@@ -11,12 +11,11 @@ import { resetStatus } from "../../../store/slices/transferSlice";
 const MyTeam = () => {
   const { Title, Text } = Typography;
   const dispatch = useDispatch();
-  const {
-    userTeam: { team, loading },
-    transfer: { status },
-  } = useSelector((state) => state);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedPlayerKey, setSelectedPlayerKey] = useState("");
+
+  const { team, loading } = useSelector((state) => state.userTeam);
+  const { status } = useSelector((state) => state.transfer);
 
   const handleTransfer = (key) => {
     setSelectedPlayerKey(key);

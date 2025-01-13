@@ -15,8 +15,8 @@ import { STATUS } from "../../../../constants/constants";
 const PlayersList = ({filters}) => {
   const { Title } = Typography;
   const dispatch = useDispatch();
-  const { loading, players, status } = useSelector((state) => state.transfer);
   const [isRemoved, setRemoved] = useState(false)
+  const { loading, players, status } = useSelector((state) => state.transfer);
 
   const handleBuyPlayer = (playerId) => {
     dispatch(purchasePlayer({ playerId }));

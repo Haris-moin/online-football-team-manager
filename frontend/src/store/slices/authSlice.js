@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { RESET_SLICE } from '../actions/resetSlice';
 import { getValueFromLocalStorage, setValuesToLocalStorage } from '../../utils/utils';
 import { AUTH_TOKEN } from '../../constants/constants';
 import UserService from '../../services/authServices';
@@ -39,11 +38,6 @@ export const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(RESET_SLICE, () => ({
-        ...initialState,
-        token: null,
-        redirect: "/auth",
-      })) // call on logout
       .addCase(authenticateUser.pending, (state) => {
         return { ...state, loading: true };
       })

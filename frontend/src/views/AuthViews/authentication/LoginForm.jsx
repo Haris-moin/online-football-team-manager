@@ -5,11 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 const { Title } = Typography;
 
 const AuthScreen = () => {
+  const dispatch = useDispatch();
   const { loading } = useSelector(
     (state) => state.auth
   );
-
-  const dispatch = useDispatch();
+  
   const onFinish = (values) => {
     dispatch(authenticateUser({ ...values }));
   };
