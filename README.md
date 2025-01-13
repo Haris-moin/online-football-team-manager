@@ -102,3 +102,78 @@ A full-stack fantasy football application where users can register/login, manage
      - Add/remove players from your transfer list.
      - Set asking prices for players.
      - Buy players from other teams at 95% of their asking price.
+
+
+
+# Project Overview
+This project is divided into two main sections: **Frontend Development** and **Backend Development**, each focusing on specific technologies and best practices to ensure a scalable and efficient application.
+
+---
+
+## Time Report
+### Frontend Development
+1. **Frontend Structure Creation**: 12 hours  
+   Designed and implemented a clean and scalable folder structure to enhance maintainability.
+
+2. **Redux Toolkit API Integration**: 3 hours  
+   Integrated Redux Toolkit for state management, including the setup of slices and middleware for API handling.
+
+3. **Reusable Components**: 6 hours  
+   Developed separate components to promote code reusability, ensuring consistent styling and behavior across the application.
+
+### Backend Development
+1. **Service Layer Creation**: 2 hours  
+   Designed and implemented service layers for business logic, ensuring a clear separation of concerns.
+
+2. **Database Integration (MongoDB with Mongoose)**: 8 hours  
+   Set up MongoDB as the database, configured Mongoose as the ORM, and implemented models and schemas for data structure.
+
+3. **Controller and Structure Setup**: 8 hours  
+   Built a modular and organized controller structure for handling API endpoints efficiently.
+
+---
+
+## Frontend Development Details
+### Key Features:
+#### **Frontend Structure:**
+- Created a logical folder structure for components, hooks, Redux slices, and utilities.
+- Ensured clear separation between presentation and logic layers.
+
+#### **Redux Toolkit API Integration:**
+- Configured slices and API middleware for state management.
+- Used `useDispatch` and `useSelector` hooks to connect components to the global state.
+
+#### **Reusable Components:**
+- Developed modular and reusable components to reduce redundancy.
+- Examples include Buttons, Modals, and Form Elements.
+
+---
+
+## Backend Development Details
+### Key Features:
+#### **Services:**
+- Encapsulated business logic into service files to keep controllers clean.
+- Ensured easy scalability for future feature additions.
+
+#### **Database Integration:**
+- Used MongoDB as the primary database for its flexibility and scalability.
+- Configured Mongoose ORM for schema definition and data validation.
+
+#### **Controllers and Structure:**
+- Designed RESTful controllers for handling API requests.
+- Organized code into a modular structure for maintainability.
+
+---
+
+## Technologies Used
+### Frontend:
+- React.js
+- Redux Toolkit
+- JavaScript/TypeScript
+- Ant Design
+
+### Backend:
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose

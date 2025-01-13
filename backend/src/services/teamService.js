@@ -25,3 +25,19 @@ exports.createTeam = async (userId) => {
   await team.save();
 };
 
+/**
+ * Fetch the user's team along with non-transfer-listed players.
+ * @param {string} userId - ID of the logged-in user.
+ * @returns {Promise<object>} - The team object with players.
+ */
+exports.fetchTeamByUserId = async (userId) => {
+  try {
+    const team = await Team.findOne({ userId }).populate({
+      path: 'players',
+      match: { transferListed: false },
+    });
+    return team;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};

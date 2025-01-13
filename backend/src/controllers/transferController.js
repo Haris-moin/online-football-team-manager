@@ -1,209 +1,53 @@
-const Joi = require("joi");
-const Player = require("../models/Player");
-const Team = require("../models/Team");
+const {
+  validatePlayerTransfer,
+  toggleTransferListing,
+  getTransferredPlayers,
+  purchasePlayer,
+} = require("../services/transferService");
 
+/**
+ * Controller to toggle player transfer listing.
+ */
 exports.toggleTransferListing = async (req, res) => {
-  const playerTransferSchema = Joi.object({
-    playerId: Joi.string().required(),
-    askingPrice: Joi.number().optional(),
-  });
-
   try {
-    const { error, value } = playerTransferSchema.validate(req.body);
+    const { error, value } = validatePlayerTransfer(req.body);
     if (error) {
-      return res
-        .status(400)
-        .json({ message: error?.details[0]?.message || error.toString() });
+      return res.status(400).json({ message: error.details[0].message });
     }
 
     const { playerId, askingPrice } = value;
-    const player = await Player.findById(playerId).populate({
-      path: "teamId",
-      select: "userId teamName",
-    });
-
-    if (!player) {
-      return res.status(404).json({ message: "Player not found." });
-    }
-
-    const userId = req.user.id;
-    if (player.teamId.userId.toString() !== userId.toString()) {
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to transfer this player." });
-    }
-
-    if (!player.transferListed && !askingPrice) {
-      return res
-        .status(400)
-        .json({ message: "Asking price must be provided." });
-    }
-
-    player.transferListed = !player.transferListed;
-
-    if (player.transferListed) {
-      player.askingPrice = askingPrice;
-    } else {
-      player.askingPrice = undefined;
-    }
-
-    await player.save();
+    const player = await toggleTransferListing(playerId, req.user.id, askingPrice);
 
     res.status(200).json({
-      message: `Player transfer listing successfully ${
-        player.transferListed ? "enabled" : "disabled"
-      }.`,
+      message: `Player transfer listing successfully ${player.transferListed ? "enabled" : "disabled"}.`,
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Error updating transfer listing.",
-      error: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
 
+/**
+ * Controller to fetch players listed for transfer.
+ */
 exports.getTransferredPlayers = async (req, res) => {
-  const { playerName, price, teamName } = req.query;
-
   try {
-    const filterPipeline = [
-      { $match: { transferListed: true } },
-      {
-        $lookup: {
-          from: "teams",
-          localField: "teamId",
-          foreignField: "_id",
-          as: "team",
-        },
-      },
-      {
-        $unwind: "$team",
-      },
-    ];
-
-    if (teamName) {
-      filterPipeline.push({
-        $match: { "team.teamName": { $regex: teamName, $options: "i" } },
-      });
-    }
-
-    if (playerName) {
-      filterPipeline.push({
-        $match: { name: { $regex: playerName, $options: "i" } },
-      });
-    }
-
-    if (price) {
-      filterPipeline.push({
-        $match: {
-          askingPrice: {
-            $lte: Number(price),
-          },
-        },
-      });
-    }
-
-    filterPipeline.push({
-      $project: {
-        name: 1,
-        position: 1,
-        askingPrice: 1,
-        teamId: 1,
-        "team.teamName": 1,
-      },
-    });
-
-    const filteredPlayers = await Player.aggregate(filterPipeline);
-    const team = await Team.findOne({ userId: req.user.id });
-    if (filteredPlayers.length > 0) {
-      const updatedPlayers = filteredPlayers?.map((player) => {
-        return {
-          ...player,
-          isTeamMember: player.teamId.equals(team._id),
-        };
-      });
-
-      return res
-        .status(200)
-        .json({
-          message: "Players fetched successfully.",
-          players: updatedPlayers,
-        });
-    }
-
-    res
-      .status(200)
-      .json({
-        message: "Players fetched successfully.",
-        players: filteredPlayers,
-      });
+    const players = await getTransferredPlayers(req.query, req.user.id);
+    res.status(200).json({ message: "Players fetched successfully.", players });
   } catch (error) {
-    res.status(500).json({
-      message: "Error filtering transfer market.",
-      error: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
 
+/**
+ * Controller to purchase a player.
+ */
 exports.purchasePlayer = async (req, res) => {
-  const purchasePlayerSchema = Joi.object({
-    playerId: Joi.string().required(),
-  });
-
   try {
-    const { error, value } = purchasePlayerSchema.validate(req.body);
-    if (error) {
-      return res
-        .status(400)
-        .json({ message: error?.details[0]?.message || error.toString() });
-    }
+    const { playerId } = req.body;
 
-    const { playerId } = value;
-
-    const player = await Player.findById(playerId);
-    if (!player || !player.transferListed) {
-      return res
-        .status(400)
-        .json({ message: "Player is not available for transfer." });
-    }
-
-    const buyerTeam = await Team.findOne({ userId: req.user.id });
-    const sellerTeam = await Team.findById(player.teamId);
-
-    if (!buyerTeam) {
-      return res.status(404).json({ message: "Buyer team not found." });
-    }
-
-    const transferPrice = player.askingPrice * 0.95;
-
-    if (buyerTeam.budget < transferPrice) {
-      return res
-        .status(400)
-        .json({ message: "Insufficient budget to purchase player." });
-    }
-
-    buyerTeam.budget -= transferPrice;
-    sellerTeam.budget += transferPrice;
-
-    player.teamId = buyerTeam._id;
-    player.transferListed = false;
-    player.askingPrice = undefined;
-
-    sellerTeam.players = sellerTeam.players.filter(
-      (pId) => pId.toString() !== playerId
-    );
-    buyerTeam.players.push(playerId);
-
-    await Promise.all([player.save(), buyerTeam.save(), sellerTeam.save()]);
-
-    res.status(200).json({
-      message: "Player purchased successfully.",
-      player,
-    });
+    const player = await purchasePlayer(playerId, req.user.id);
+    res.status(200).json({ message: "Player purchased successfully.", player });
   } catch (error) {
-    res.status(500).json({
-      message: "Error completing player purchase.",
-      error: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
