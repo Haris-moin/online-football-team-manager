@@ -5,22 +5,24 @@ import {
   toggleTransfer,
   purchasePlayer,
 } from "../../../store/slices/transferSlice";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Loading from "../../../components/Loading";
 import PlayerTable from "../../../components/PlayerTable";
+import SearchForm from "../../../components/SearchForm";
 
 const TransferList = () => {
   const { Title } = Typography;
   const dispatch = useDispatch();
   const { loading, players } = useSelector((state) => state.transfer);
+  const [filters, setFilters] = useState({});
 
   const handleBuyPlayer = (playerId) => {
     dispatch(purchasePlayer({ playerId }));
   };
 
   const getTransferPlayers = useCallback(() => {
-    dispatch(getTransferListedPlayers());
-  }, [dispatch]);
+    dispatch(getTransferListedPlayers(filters));
+  }, [dispatch, filters]);
 
   useEffect(() => {
     getTransferPlayers();
@@ -31,6 +33,22 @@ const TransferList = () => {
     await getTransferPlayers();
   };
 
+  const handleSearch = (values) => {
+    const filteredValues = Object.fromEntries(
+      Object.entries(values).filter(([, value]) => value !== undefined && value !== "")
+    );
+    setFilters(filteredValues);
+  };
+
+  const handleClear = () => {
+    console.log('onClear:');
+  }
+
+  useEffect(()=>{
+    console.log('useEffect: ');
+
+  })
+console.log('run');
   const renderTag = (text, color = "blue") => (
     <Tag className="text-uppercase" color={color}>
       {text}
@@ -40,11 +58,11 @@ const TransferList = () => {
   const renderActions = (record) => (
     <Space size="middle">
       {record.isTeamMember ? (
-        <Button danger onClick={() => handleRemoveTransfer(record.key)}>
+        <Button color="danger" variant="outlined" onClick={() => handleRemoveTransfer(record.key)}>
           Remove
         </Button>
       ) : (
-        <Button onClick={() => handleBuyPlayer(record.key)}> Buy</Button>
+        <Button color="primary" variant="outlined" onClick={() => handleBuyPlayer(record.key)}> Buy</Button>
       )}
     </Space>
   );
@@ -102,6 +120,9 @@ const TransferList = () => {
         <div className="p-2">
           <div className="mb-2">
             <Title level={3}>Transfer Market</Title>
+          </div>
+          <div className="mb-2 mt-2 p-2">
+          <SearchForm onSearch={handleSearch} onClear={handleClear} />
           </div>
           <PlayerTable data={data} columns={columns} />
         </div>

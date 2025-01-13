@@ -10,9 +10,11 @@ const TransferService = {
     });
   },
 
-  getTransferListedPlayers() {
+  getTransferListedPlayers(query = {}) {
+    const url = `${TRANSFER_SERVICE}/players?${new URLSearchParams(query).toString()}`;
+    console.log('url: ', url);
     return fetch({
-      url: `${TRANSFER_SERVICE}/players`,
+      url,
       method: "get",
     });
   },

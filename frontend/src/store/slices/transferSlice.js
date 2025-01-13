@@ -24,8 +24,9 @@ export const toggleTransfer = createAsyncThunk(
 export const getTransferListedPlayers = createAsyncThunk(
   "transfer/players",
   async (data, { rejectWithValue }) => {
+    console.log('data: ', data);
     try {
-      const response = await TransferService.getTransferListedPlayers();
+      const response = await TransferService.getTransferListedPlayers(data);
       return response;
     } catch (err) {
       return rejectWithValue(err?.response?.data?.message || "Error");

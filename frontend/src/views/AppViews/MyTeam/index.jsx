@@ -39,7 +39,7 @@ const MyTeam = () => {
 
   const renderActions = (record) => (
     <Space size="middle">
-      <Button onClick={() => handleTransfer(record.key)}>Transfer</Button>
+      <Button color="primary" variant="outlined"  onClick={() => handleTransfer(record.key)}>Transfer</Button>
     </Space>
   );
 
