@@ -1,9 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import TeamService from '../../services/teamService';
+import { STATUS } from '../../constants/constants';
 
 export const initialState = {
   loading: false,
   message: '',
+  status: '',
   team:{}
 };
 
@@ -30,7 +32,8 @@ export const userTeamSlice = createSlice({
         return {
           ...state,
           loading: false,
-          team: payload?.team
+          team: payload?.team,
+          status:STATUS.SUCCESS
         };
       })
       .addCase(getUserTeam.rejected, (state, action) => {
@@ -38,6 +41,7 @@ export const userTeamSlice = createSlice({
           ...state,
           message: action.payload,
           loading: false,
+          status:STATUS.ERROR
         };
       })
   }

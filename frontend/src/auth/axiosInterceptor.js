@@ -40,13 +40,6 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     const { data } = response;
-
-    notification.success({
-      message: "Request successful",
-      description: data?.message || "Your request was processed successfully.",
-      key: 'success-notification',
-    });
-
     return data;
   },
   (error) => {

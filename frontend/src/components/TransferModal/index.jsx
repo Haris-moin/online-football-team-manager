@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { toggleTransfer } from '../../store/slices/transferSlice';
 
 
-const TransferModal = ({ isVisible, onCancel, selectedPlayerKey, getTeamDetails }) => {
+const TransferModal = ({ isVisible, onCancel, selectedPlayerKey }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
 
@@ -23,7 +23,6 @@ const TransferModal = ({ isVisible, onCancel, selectedPlayerKey, getTeamDetails 
      dispatch(toggleTransfer(payload));
      form.resetFields();
       onCancel();
-     await getTeamDetails();
     } catch (error) {
       console.error("Validation Failed:", error);
     }
@@ -66,7 +65,6 @@ TransferModal.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   onCancel: PropTypes.func.isRequired,
   selectedPlayerKey: PropTypes.string.isRequired,
-  getTeamDetails: PropTypes.func.isRequired,
 };
 
 export default TransferModal;

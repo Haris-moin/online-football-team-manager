@@ -12,7 +12,6 @@ const TransferService = {
 
   getTransferListedPlayers(query = {}) {
     const url = `${TRANSFER_SERVICE}/players?${new URLSearchParams(query).toString()}`;
-    console.log('url: ', url);
     return fetch({
       url,
       method: "get",

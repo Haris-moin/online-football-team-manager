@@ -1,17 +1,22 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Typography, Space, Button, Tag } from "antd";
+import { Typography, Space, Button, Tag, notification } from "antd";
 import Loading from "../../../components/Loading";
 import PlayerTable from "../../../components/PlayerTable";
 import TransferModal from "../../../components/TransferModal";
 import { getUserTeam } from "../../../store/slices/teamSlice";
+import { STATUS } from "../../../constants/constants";
+import { resetStatus } from "../../../store/slices/transferSlice";
 
 const MyTeam = () => {
   const { Title, Text } = Typography;
   const dispatch = useDispatch();
-  const { team, loading } = useSelector((state) => state.userTeam);
+  const {
+    userTeam: { team, loading },
+    transfer: { status },
+  } = useSelector((state) => state);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedPlayerKey, setSelectedPlayerKey] = useState('');
+  const [selectedPlayerKey, setSelectedPlayerKey] = useState("");
 
   const handleTransfer = (key) => {
     setSelectedPlayerKey(key);
@@ -22,14 +27,19 @@ const MyTeam = () => {
     setIsModalVisible(false);
   };
 
-
-  const getTeamDetails = useCallback(() => {
+  useEffect(() => {
     dispatch(getUserTeam());
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
-    getTeamDetails();
-  }, [getTeamDetails, team?.players?.length]);
+    if (status === STATUS.SUCCESS) {
+      notification.success({
+        message: "Player Transfer Successfully",
+      });
+      dispatch(getUserTeam());
+      dispatch(resetStatus());
+    }
+  }, [dispatch, status]);
 
   const renderTag = (text, color = "blue") => (
     <Tag className="text-uppercase" color={color}>
@@ -39,15 +49,21 @@ const MyTeam = () => {
 
   const renderActions = (record) => (
     <Space size="middle">
-      <Button color="primary" variant="outlined"  onClick={() => handleTransfer(record.key)}>Transfer</Button>
+      <Button
+        color="primary"
+        variant="outlined"
+        onClick={() => handleTransfer(record.key)}
+      >
+        Transfer
+      </Button>
     </Space>
   );
 
   const columns = [
     {
-      title: 'SR No',
-      dataIndex: 'srNo',
-      key: 'srNo',
+      title: "SR No",
+      dataIndex: "srNo",
+      key: "srNo",
       render: (text, record, index) => index + 1,
     },
     {
@@ -97,7 +113,6 @@ const MyTeam = () => {
             isVisible={isModalVisible}
             onCancel={handleCancel}
             selectedPlayerKey={selectedPlayerKey}
-            getTeamDetails={getTeamDetails}
           />
           <PlayerTable data={data} columns={columns} />
         </>

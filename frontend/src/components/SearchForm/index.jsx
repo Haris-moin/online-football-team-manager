@@ -2,7 +2,6 @@ import PropTypes from "prop-types";
 import { Button, Form, Input, Row, Col } from "antd";
 
 const SearchForm = ({ onSearch, onClear}) => {
-  console.log('SearchForm: ');
   const [form] = Form.useForm();
 
   const handleReset = () => {

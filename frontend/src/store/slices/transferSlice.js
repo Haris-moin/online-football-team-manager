@@ -1,10 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import TransferService from "../../services/transferService";
+import { STATUS } from "../../constants/constants";
 
 export const initialState = {
   loading: false,
   message: "",
   redirect:'',
+  status:'',
+  showMessage: '',
   players:[]
 };
 
@@ -24,7 +27,6 @@ export const toggleTransfer = createAsyncThunk(
 export const getTransferListedPlayers = createAsyncThunk(
   "transfer/players",
   async (data, { rejectWithValue }) => {
-    console.log('data: ', data);
     try {
       const response = await TransferService.getTransferListedPlayers(data);
       return response;
@@ -49,6 +51,11 @@ export const purchasePlayer = createAsyncThunk(
 export const teansferPlayerSlice = createSlice({
   name: "transfer",
   initialState,
+  reducers: { 
+    resetStatus: (state) => ({
+      ...state, status:'',
+    }),
+  },
   extraReducers: (builder) => {
     builder
       .addCase(toggleTransfer.pending, (state) => {
@@ -60,6 +67,7 @@ export const teansferPlayerSlice = createSlice({
           ...state,
           loading: false,
           message: payload.message,
+          status:STATUS.SUCCESS,
           redirect: "/app/transfer-list",
         };
       })
@@ -68,17 +76,17 @@ export const teansferPlayerSlice = createSlice({
           ...state,
           message: action.payload,
           loading: false,
+          status: STATUS.ERROR
         };
       })
       .addCase(purchasePlayer.pending, (state) => {
         return { ...state, loading: true };
       })
-      .addCase(purchasePlayer.fulfilled, (state, action) => {
-        const payload = action.payload;
-        console.log("payload: ", payload);
+      .addCase(purchasePlayer.fulfilled, (state) => {
         return {
           ...state,
           loading: false,
+          status: STATUS.SUCCESS,
           redirect: "/app/my-team",
         };
       })
@@ -87,6 +95,7 @@ export const teansferPlayerSlice = createSlice({
           ...state,
           message: action.payload,
           loading: false,
+          status: STATUS.ERROR,
         };
       })
       .addCase(getTransferListedPlayers.pending, (state) => {
@@ -109,5 +118,9 @@ export const teansferPlayerSlice = createSlice({
       });
   },
 });
+
+export const {
+  resetStatus,
+} = teansferPlayerSlice.actions;
 
 export default teansferPlayerSlice.reducer;
